@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "root",
+    "password": "123456789",
+    "database": "online_learning",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "underscored": true
+  },
+  "test": {
+    "username": "root",
+    "password": "123456789",
+    "database": "online_learning",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "underscored": true
+  },
+  "production": {
+    "username": "root",
+    "password": "123456789",
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "underscored": true
+  }
+}

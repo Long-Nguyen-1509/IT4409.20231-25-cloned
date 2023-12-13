@@ -1,19 +1,10 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("./database");
-const User = require("./User");
+module.exports = (sequelize, DataTypes) => {
+  const Role = sequelize.define("Role", {
+    roleName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  });
 
-const Role = sequelize.define("Role", {
-  roleId: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  roleName: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
-
-Role.hasMany(User, { foreignKey: "roleId" });
-
-module.exports = Role;
+  return Role;
+};

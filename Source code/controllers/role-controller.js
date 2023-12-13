@@ -1,10 +1,8 @@
-const RoleService = require("../services/RoleService");
+const RoleService = require("../services/role-service");
 
 exports.createRole = async (req, res) => {
   try {
-    const { roleName } = req.body;
-    const roleData = { roleName };
-    const newRole = await RoleService.createRole(roleData);
+    const newRole = await RoleService.createRole(req.body);
     res.status(201).json(newRole);
   } catch (error) {
     console.error(error);

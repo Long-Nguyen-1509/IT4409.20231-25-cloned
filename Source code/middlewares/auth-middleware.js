@@ -2,35 +2,6 @@ const { verifyJWT } = require("../utils/jwt-utils");
 const { isTokenBlacklisted } = require("../services/token-blacklist-service");
 const { getUserByIdWithRole } = require("../services/user-service");
 
-// exports.authorization = (requiredRole) => {
-//   return async (req, res, next) => {
-//     const token =
-//       req.headers.authorization && req.headers.authorization.split(" ")[1];
-
-//     if (!token) {
-//       return res.status(401).json({ error: "Unauthorized - Missing token" });
-//     }
-
-//     try {
-//       const decoded = await verifyJwt(token);
-
-//       const user = await authenticate(decoded.username, decoded.password);
-
-//       if (user && user.role === requiredRole) {
-//         req.user = user;
-//         next();
-//       } else {
-//         res.status(403).json({ error: "Forbidden - Insufficient permissions" });
-//       }
-//     } catch (error) {
-//       console.error("Error verifying JWT or authenticating user:", error);
-//       res
-//         .status(403)
-//         .json({ error: "Forbidden - Invalid token or authentication error" });
-//     }
-//   };
-// };
-
 exports.authorization = (requiredRole) => {
   return async (req, res, next) => {
     const token =
@@ -48,14 +19,13 @@ exports.authorization = (requiredRole) => {
       }
 
       const decoded = await verifyJWT(token);
+      req.decoded = decoded;
       const user = await getUserByIdWithRole(decoded.userId);
-      console.log(user.id);
       if (
         user &&
-        user.banned === false &&
-        user.Role.roleName === requiredRole
+        user.isBanned === false &&
+        requiredRole.includes(decoded.role)
       ) {
-        console.log(user.Role.roleName);
         next();
       } else {
         res.status(403).json({ error: "Forbidden - Insufficient permissions" });
@@ -65,6 +35,31 @@ exports.authorization = (requiredRole) => {
       res
         .status(403)
         .json({ error: "Forbidden - Invalid token or authentication error" });
+    }
+  };
+};
+
+exports.userIdentifier = () => {
+  return async (req, res, next) => {
+    try {
+      const decoded = req.decoded;
+
+      if (
+        (req.body &&
+          req.body.id !== undefined &&
+          decoded.userId === req.body.id) ||
+        (req.params &&
+          req.params.id !== undefined &&
+          decoded.userId === parseInt(req.params.id, 10))
+      ) {
+        next();
+      } else {
+        res.status(403).json({
+          error: "Forbidden - Unauthorized",
+        });
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 };

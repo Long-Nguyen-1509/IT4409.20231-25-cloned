@@ -1,9 +1,15 @@
 const { sign, verify } = require("jsonwebtoken");
+const { getRoleById } = require("../services/role-service");
 
-exports.generateJWT = (user) => {
-  const role = user.getRole.getRoleName;
+exports.generateJWT = (user, role) => {
+  // console.log(user);
+  // console.log(role);
   return sign(
-    { userId: user.id, username: user.username, role: role },
+    {
+      userId: user.id,
+      username: user.fullName,
+      role: role.roleName,
+    },
     process.env.JWT_SECRET_KEY,
     { expiresIn: "1h" }
   );

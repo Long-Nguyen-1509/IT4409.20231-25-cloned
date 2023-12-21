@@ -11,7 +11,7 @@ exports.generateJWT = (user, role) => {
       role: role.roleName,
     },
     process.env.JWT_SECRET_KEY,
-    { expiresIn: "1h" }
+    { expiresIn: "20m" }
   );
 };
 

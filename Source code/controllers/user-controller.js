@@ -57,27 +57,30 @@ exports.loginUser = async (req, res) => {
     const { user, token } = await UserService.loginUser(email, password);
     res.status(200).json({ user: user, token: token });
   } catch (error) {
-    res.status(401).json(error);
+    res.status(401).json({ error: error.message });
   }
 };
 
 exports.logoutUser = async (req, res) => {
   try {
-    const token = await UserService.logoutUser(req.body.id, req.body.token);
-    res.status(200);
+    const decoded = req.decoded;
+    const token = req.userToken;
+    await UserService.logoutUser(decoded.userId, token);
+    res.status(200).json({ message: "Logged out" });
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
 exports.changePassword = async (req, res) => {
   try {
-    const newUser = await UserService.changePassword(
-      req.params.id,
+    const decoded = req.decoded;
+    await UserService.changePassword(
+      decoded.userId,
       req.body.oldPassword,
       req.body.newPassword
     );
-    res.status(200).json(newUser);
+    res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
     res.status(500).json(error);
   }
@@ -103,7 +106,10 @@ exports.unbanUser = async (req, res) => {
 
 exports.getEnrolledCourses = async (req, res) => {
   try {
-    const enrolledCourses = await UserService.getEnrolledCourses(req.params.id);
+    const decoded = req.decoded;
+    const enrolledCourses = await UserService.getEnrolledCourses(
+      decoded.userId
+    );
     res.status(200).json(enrolledCourses);
   } catch (error) {
     res.status(500).json(error);

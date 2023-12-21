@@ -9,6 +9,7 @@ exports.getUserProfileById = async (userId) => {
     console.log(userId);
     const userProfile = await UserProfile.findOne({
       where: { userId },
+      attributes: { exclude: ["userId"] },
     });
     if (userProfile) {
       return userProfile;

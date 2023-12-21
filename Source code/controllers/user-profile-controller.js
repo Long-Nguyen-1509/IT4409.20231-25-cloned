@@ -13,8 +13,9 @@ exports.getUserProfileById = async (req, res) => {
 
 exports.updateUserProfile = async (req, res) => {
   try {
+    const decoded = req.decoded;
     const updateUserProfile = await UserProfileService.updateUserProfile(
-      req.params.id,
+      decoded.userId,
       req.body
     );
     res.status(200).json(updateUserProfile);

@@ -20,7 +20,11 @@ exports.authorization = (requiredRole) => {
 
       const decoded = await verifyJWT(token);
       req.decoded = decoded;
+      req.userToken = token;
       const user = await getUserByIdWithRole(decoded.userId);
+      console.log(requiredRole);
+      console.log(decoded.role);
+      console.log(requiredRole.includes(decoded.role));
       if (
         user &&
         user.isBanned === false &&

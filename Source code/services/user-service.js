@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const { generateJWT } = require("../utils/jwt-utils");
 const {
-  models: { User, Role, UserProfile },
+  models: { User, Role, UserProfile, TokenBlacklist },
   sequelize,
 } = require("../models");
 const { Op } = require("sequelize");
@@ -61,6 +61,12 @@ exports.findAllUsersByNameOrEmail = async (query, page = 1, pageSize = 10) => {
       where: whereClause,
       limit: pageSize,
       offset: offset,
+      include: [
+        {
+          model: Role,
+          attributes: ["roleName"],
+        },
+      ],
     });
 
     return {
@@ -110,7 +116,11 @@ exports.registerUser = async (userData) => {
       password: hashedPassword,
     });
 
-    const role = await newUser.getRole();
+    const userWithRole = await User.findByPk(newUser.id, {
+      include: [{ model: Role, attributes: ["roleName"] }],
+    });
+
+    const role = userWithRole?.Role?.roleName;
 
     await UserProfile.create({
       fullName: userData.fullName,
@@ -121,7 +131,7 @@ exports.registerUser = async (userData) => {
 
     await transaction.commit();
 
-    return { newUser, token };
+    return { newUser: userWithRole, token };
   } catch (error) {
     if (transaction) {
       await transaction.rollback();
@@ -133,12 +143,19 @@ exports.registerUser = async (userData) => {
 
 exports.loginUser = async (email, password) => {
   try {
-    const user = await User.findOne({ where: { email } });
-    const role = await user.getRole();
+    const user = await User.findOne({
+      where: { email },
+      include: [{ model: Role, attributes: ["roleName"] }],
+    });
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return false;
+    if (!user) {
+      throw new Error("User does not exist");
     }
+    if (!(await bcrypt.compare(password, user.password))) {
+      throw new Error("Password is incorrect");
+    }
+    const role = user.Role;
+    console.log(role);
     const token = generateJWT(user, role);
     return { user, token };
   } catch (error) {
@@ -156,8 +173,8 @@ exports.changePassword = async (userId, oldPassword, newPassword) => {
       const hashedPassword = await bcrypt.compare(oldPassword, user.password);
       if (hashedPassword) {
         const newHashedPassword = await bcrypt.hash(newPassword, 10);
-        const updatedUser = await user.update({ password: newHashedPassword });
-        return updatedUser;
+        user.update({ password: newHashedPassword });
+        return;
       } else {
         throw new Error("Old password is incorrect");
       }

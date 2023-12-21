@@ -2,8 +2,9 @@ const EnrollmentService = require("../services/enrollment-service");
 
 exports.enrollStudentInCourse = async (req, res) => {
   try {
+    const decoded = req.decoded;
     await EnrollmentService.enrollStudentInCourse(
-      req.params.id,
+      decoded.userId,
       req.body.courseId
     );
     res.status(200).json({ message: "Student enrolled successfully" });

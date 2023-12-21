@@ -16,17 +16,22 @@ router.post("/public/register", UserController.registerUser);
 router.post("/public/login", UserController.loginUser);
 router.post("/public/logout", UserController.logoutUser);
 
-// profile routes
-router.use("/profile", authorization(["STUDENT", "INSTRUCTOR", "ADMIN"]));
+// user routes
+router.use("/user", authorization(["STUDENT", "INSTRUCTOR", "ADMIN"]));
 router.get(
-  "/profile/:id",
+  "/user/:id",
   userIdentifier(),
   UserProfileController.getUserProfileById
 );
 router.put(
-  "/profile/:id/edit",
+  "/user/:id/edit",
   userIdentifier(),
   UserProfileController.updateUserProfile
+);
+router.put(
+  "/user/:id/change-password",
+  userIdentifier(),
+  UserController.changePassword
 );
 
 // student routes

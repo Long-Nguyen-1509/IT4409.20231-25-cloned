@@ -70,6 +70,19 @@ exports.logoutUser = async (req, res) => {
   }
 };
 
+exports.changePassword = async (req, res) => {
+  try {
+    const newUser = await UserService.changePassword(
+      req.params.id,
+      req.body.oldPassword,
+      req.body.newPassword
+    );
+    res.status(200).json(newUser);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 exports.banUser = async (req, res) => {
   try {
     const user = await UserService.banUser(req.params.id);

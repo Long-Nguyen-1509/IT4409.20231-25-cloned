@@ -147,6 +147,27 @@ exports.loginUser = async (email, password) => {
   }
 };
 
+exports.changePassword = async (userId, oldPassword, newPassword) => {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error("User not found: " + userId);
+    } else {
+      const hashedPassword = await bcrypt.compare(oldPassword, user.password);
+      if (hashedPassword) {
+        const newHashedPassword = await bcrypt.hash(newPassword, 10);
+        const updatedUser = await user.update({ password: newHashedPassword });
+        return updatedUser;
+      } else {
+        throw new Error("Old password is incorrect");
+      }
+    }
+  } catch (error) {
+    console.error("Error during change password:", error);
+    throw error;
+  }
+};
+
 exports.logoutUser = async (userId, token) => {
   try {
     TokenBlacklist.create({

@@ -43,7 +43,8 @@ exports.userIdentifier = () => {
   return async (req, res, next) => {
     try {
       const decoded = req.decoded;
-
+      console.log(decoded.userId);
+      console.log(req.params.id);
       if (
         (req.body &&
           req.body.id !== undefined &&

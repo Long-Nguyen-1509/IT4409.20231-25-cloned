@@ -1,5 +1,5 @@
 const {
-  models: { Course },
+  models: { Course, User, Enrollment, Lesson, Resource },
 } = require("../models");
 
 const { Op } = require("sequelize");
@@ -35,19 +35,20 @@ exports.findAllCoursesByName = async (query, page = 1, pageSize = 10) => {
 
 exports.createCourse = async (data, userId) => {
   try {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      throw new Error("User not found");
-    }
     const { name, image, description } = data;
     return Course.create({ name, image, description, instructorId: userId });
   } catch (error) {}
 };
 
-exports.updateCourse = async (data, id) => {
+exports.updateCourse = async (data, id, userId) => {
   try {
     const { name, image, description } = data;
-    const course = await Course.findByPk(id);
+    const course = await Course.findOne({
+      where: {
+        id,
+        instructorId: userId,
+      },
+    });
     if (!course) {
       throw new Error("Course not found");
     }
@@ -55,9 +56,14 @@ exports.updateCourse = async (data, id) => {
   } catch (error) {}
 };
 
-exports.deleteCourse = async (id) => {
+exports.deleteCourse = async (id, userId) => {
   try {
-    const course = await Course.findByPk(id);
+    const course = await Course.findOne({
+      where: {
+        id,
+        instructorId: userId,
+      },
+    });
     if (!course) {
       throw new Error("Course not found");
     }
@@ -69,46 +75,73 @@ exports.deleteCourse = async (id) => {
     if (enrollment) {
       throw new Error("Course has enrollment, cannot delete");
     }
-    return course.destroy();
+    return Promise.all([
+      course.destroy(),
+      Lesson.destroy({
+        where: {
+          courseId: id,
+        },
+      }),
+    ]);
   } catch (error) {}
 };
 
 exports.createCourse = async (data, userId) => {
   try {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      throw new Error("User not found");
-    }
     const { name, image, description } = data;
     return Course.create({ name, image, description, instructorId: userId });
   } catch (error) {}
 };
 
-exports.updateCourse = async (data, id) => {
+exports.createLesson = async (data, courseId, userId) => {
   try {
-    const { name, image, description } = data;
-    const course = await Course.findByPk(id);
+    const course = await Course.findOne({
+      where: {
+        id: courseId,
+        instructorId: userId,
+      },
+    });
     if (!course) {
       throw new Error("Course not found");
     }
-    return course.update({ name, image, description });
+    const { name, content } = data;
+    return Lesson.create({ name, content, courseId });
   } catch (error) {}
 };
 
-exports.deleteCourse = async (id) => {
+exports.updateLesson = async (data, courseId, lessonId, userId) => {
   try {
-    const course = await Course.findByPk(id);
-    if (!course) {
-      throw new Error("Course not found");
-    }
-    const enrollment = await Enrollment.findOne({
-      where: {
-        courseId: id,
+    const lesson = await Lesson.findByPk(lessonId, {
+      include: {
+        model: Course,
+        where: {
+          id: lessonId,
+          instructorId: userId,
+        },
       },
     });
-    if (enrollment) {
-      throw new Error("Course has enrollment, cannot delete");
+    if (!lesson) {
+      throw new Error("Lesson not found");
     }
-    return course.destroy();
+    const { name, content } = data;
+    return lesson.update({ name, content });
+  } catch (error) {}
+};
+
+exports.deleteLesson = async (courseId, lessonId, userId) => {
+  try {
+    const lesson = await Lesson.findByPk(lessonId, {
+      include: {
+        model: Course,
+        where: {
+          id: lessonId,
+          instructorId: userId,
+        },
+      },
+    });
+    if (!lesson) {
+      throw new Error("Lesson not found");
+    }
+    return lesson.destroy();
   } catch (error) {}
 };

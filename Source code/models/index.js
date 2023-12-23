@@ -46,7 +46,9 @@ db.models.Course.belongsToMany(db.models.User, {
   as: "students",
 });
 db.models.Course.hasMany(db.models.Lesson, { foreignKey: "courseId" });
+db.models.Lesson.belongsTo(db.models.Course, { foreignKey: "courseId" });
 db.models.Course.hasMany(db.models.Resource, { foreignKey: "courseId" });
+db.models.Resource.belongsTo(db.models.Course, { foreignKey: "courseId" });
 db.models.User.hasMany(db.models.Comment, { foreignKey: "userId" });
 db.models.Comment.belongsTo(db.models.User, { foreignKey: "userId" });
 db.models.Course.hasMany(db.models.Comment, { foreignKey: "courseId" });

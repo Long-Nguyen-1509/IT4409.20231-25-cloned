@@ -29,7 +29,10 @@ router.put("/user/change-password", UserController.changePassword);
 router.use("/student", authorization("STUDENT"));
 router.post("/student/enroll", EnrollmentController.enrollStudentInCourse);
 router.get("/student/courses", UserController.getEnrolledCourses);
-router.get("/student/courses/:courseId/lessons", UserController.getEnrolledCourses);
+router.get(
+  "/student/courses/:courseId/lessons",
+  UserController.getEnrolledCourses
+);
 
 // instructor routes
 router.use("/instructor", authorization("INSTRUCTOR"));
@@ -43,10 +46,6 @@ router.put("/instructor/courses/:id", CourseController.updateCourse);
 router.delete("/instructor/courses/:id", CourseController.deleteCourse);
 
 // lessons
-router.get(
-  "/instructor/courses/:courseId/lessons",
-  CourseController.getLessonsByCourseId
-);
 router.post(
   "/instructor/courses/:courseId/lessons",
   CourseController.createLesson

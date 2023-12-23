@@ -34,7 +34,9 @@ exports.updateCourse = async (req, res) => {
   try {
     const data = req.body;
     const { id } = req.params;
-    const course = await CourseService.updateCourse(data, id);
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    const course = await CourseService.updateCourse(data, id, userId);
     res.status(200).json(course);
   } catch (error) {
     res.status(500).json(error);
@@ -44,7 +46,47 @@ exports.updateCourse = async (req, res) => {
 exports.deleteCourse = async (req, res) => {
   try {
     const { id } = req.params;
-    await CourseService.deleteCourse(id);
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    await CourseService.deleteCourse(id, userId);
+    res.status(200);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+exports.createLesson = async (req, res) => {
+  try {
+    const data = req.body;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    const { courseId } = req.params;
+    const lesson = await CourseService.createLesson(data, courseId, userId);
+    res.status(200).json(lesson);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+exports.updateLesson = async (req, res) => {
+  try {
+    const data = req.body;
+    const { courseId, lessonId } = req.params;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    const lesson = await CourseService.updateLesson(data, courseId, lessonId, userId);
+    res.status(200).json(lesson);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+exports.deleteLesson = async (req, res) => {
+  try {
+    const { courseId, lessonId } = req.params;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    await CourseService.deleteLesson(courseId, lessonId, userId);
     res.status(200);
   } catch (error) {
     res.status(500).json(error);

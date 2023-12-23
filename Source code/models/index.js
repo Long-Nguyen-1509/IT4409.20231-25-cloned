@@ -30,7 +30,7 @@ db.models.Role.hasMany(db.models.User, { foreignKey: "roleId" });
 db.models.User.hasOne(db.models.UserProfile, { foreignKey: "userId" });
 db.models.UserProfile.belongsTo(db.models.User, { foreignKey: "userId" });
 db.models.User.hasMany(db.models.Course, {
-  as: "instructor",
+  as: "createdCourses",
   foreignKey: "instructorId",
 });
 db.models.Course.belongsTo(db.models.User, {
@@ -39,11 +39,11 @@ db.models.Course.belongsTo(db.models.User, {
 });
 db.models.User.belongsToMany(db.models.Course, {
   through: "Enrollment",
-  foreignKey: "userId",
+  as: "enrolledCourses",
 });
 db.models.Course.belongsToMany(db.models.User, {
   through: "Enrollment",
-  foreignKey: "courseId",
+  as: "students",
 });
 db.models.Course.hasMany(db.models.Lesson, { foreignKey: "courseId" });
 db.models.Course.hasMany(db.models.Resource, { foreignKey: "courseId" });

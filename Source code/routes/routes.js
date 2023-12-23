@@ -29,6 +29,7 @@ router.put("/user/change-password", UserController.changePassword);
 router.use("/student", authorization("STUDENT"));
 router.post("/student/enroll", EnrollmentController.enrollStudentInCourse);
 router.get("/student/courses", UserController.getEnrolledCourses);
+router.get("/student/courses/:courseId/lessons", UserController.getEnrolledCourses);
 
 // instructor routes
 router.use("/instructor", authorization("INSTRUCTOR"));
@@ -37,20 +38,44 @@ router.get(
   userIdentifier(),
   UserController.getCreatedCourses
 );
+router.post("/instructor/courses", CourseController.createCourse);
+router.put("/instructor/courses/:id", CourseController.updateCourse);
+router.delete("/instructor/courses/:id", CourseController.deleteCourse);
+
+// lessons
+router.get(
+  "/instructor/courses/:courseId/lessons",
+  CourseController.getLessonsByCourseId
+);
 router.post(
-  "/instructor/courses",
-  userIdentifier(),
-  UserController.createCourse
+  "/instructor/courses/:courseId/lessons",
+  CourseController.createLesson
 );
 router.put(
-  "/instructor/courses/:id",
-  userIdentifier(),
-  UserController.updateCourse
+  "/instructor/courses/:courseId/lessons/:lessonId",
+  CourseController.updateLesson
 );
 router.delete(
-  "/instructor/courses/:id",
-  userIdentifier(),
-  UserController.deleteCourse
+  "/instructor/courses/:courseId/lessons/:lessonId",
+  CourseController.deleteLesson
+);
+
+// Resources
+router.get(
+  "/instructor/courses/:courseId/resources",
+  CourseController.getResourcesByCourseId
+);
+router.post(
+  "/instructor/courses/:courseId/resources",
+  CourseController.createResource
+);
+router.put(
+  "/instructor/courses/:courseId/resources/:resourceId",
+  CourseController.updateResource
+);
+router.delete(
+  "/instructor/courses/:courseId/resources/:resourceId",
+  CourseController.deleteResource
 );
 
 // admin routes

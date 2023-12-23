@@ -33,3 +33,36 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ error: "Update failed" });
   }
 };
+
+exports.createCourse = async (req, res) => {
+  try {
+    const data = req.body;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    const course = await UserService.createCourse(data, userId);
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+exports.updateCourse = async (req, res) => {
+  try {
+    const data = req.body;
+    const id = req.params;
+    const course = await UserService.updateCourse(data, id);
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+exports.deleteCourse = async (req, res) => {
+  try {
+    const id = req.params;
+    await UserService.deleteCourse(id);
+    res.status(200);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};

@@ -30,8 +30,8 @@ router.use("/student", authorization("STUDENT"));
 router.post("/student/enroll", EnrollmentController.enrollStudentInCourse);
 router.get("/student/courses", UserController.getEnrolledCourses);
 router.get(
-  "/student/courses/:courseId/lessons",
-  UserController.getEnrolledCourses
+  "/student/courses/:id",
+  CourseController.getCourseDetailForStudent
 );
 
 // instructor routes
@@ -40,6 +40,10 @@ router.get(
   "/instructor/courses",
   userIdentifier(),
   UserController.getCreatedCourses
+);
+router.get(
+  "/instructor/courses/:id",
+  CourseController.getCourseDetailForInstructor
 );
 router.post("/instructor/courses", CourseController.createCourse);
 router.put("/instructor/courses/:id", CourseController.updateCourse);

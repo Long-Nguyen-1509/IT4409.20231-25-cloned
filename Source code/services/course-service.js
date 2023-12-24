@@ -33,6 +33,60 @@ exports.findAllCoursesByName = async (query, page = 1, pageSize = 10) => {
   }
 };
 
+exports.getCourseDetailForStudent = async (id, userId) => {
+  try {
+    const course = await Course.findByPk(id, {
+      include: [
+        {
+          model: User,
+          as: "students",
+          through: {
+            model: Enrollment,
+            where: {
+              userId,
+            },
+          },
+          attributes: [],
+          required: true,
+        },
+        {
+          model: Lesson,
+        },
+        {
+          model: Resource,
+        },
+      ],
+    });
+    if (!course) {
+      throw new Error("Course not found");
+    }
+    return course;
+  } catch (error) {}
+};
+
+exports.getCourseDetailForInstructor = async (id, userId) => {
+  try {
+    const course = await Course.findOne({
+      where: {
+        id,
+        instructorId: userId,
+      },
+      include: [
+        {
+          model: Lesson,
+        },
+        {
+          model: Resource,
+        },
+      ],
+    });
+    if (!course) {
+      throw new Error("Course not found");
+    }
+    return course;
+  } catch (error) {}
+};
+
 exports.createCourse = async (data, userId) => {
   try {
     const { name, image, description } = data;
@@ -83,13 +137,6 @@ exports.deleteCourse = async (id, userId) => {
         },
       }),
     ]);
-  } catch (error) {}
-};
-
-exports.createCourse = async (data, userId) => {
-  try {
-    const { name, image, description } = data;
-    return Course.create({ name, image, description, instructorId: userId });
   } catch (error) {}
 };
 

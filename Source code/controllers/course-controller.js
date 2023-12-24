@@ -18,6 +18,30 @@ exports.findAllCoursesByName = async (req, res) => {
   }
 };
 
+exports.getCourseDetailForStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    const course = await CourseService.getCourseDetailForStudent(id, userId);
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+exports.getCourseDetailForInstructor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    const course = await CourseService.getCourseDetailForInstructor(id, userId);
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 exports.createCourse = async (req, res) => {
   try {
     const data = req.body;
@@ -74,7 +98,12 @@ exports.updateLesson = async (req, res) => {
     const { courseId, lessonId } = req.params;
     const decoded = req.decoded;
     const userId = decoded.userId;
-    const lesson = await CourseService.updateLesson(data, courseId, lessonId, userId);
+    const lesson = await CourseService.updateLesson(
+      data,
+      courseId,
+      lessonId,
+      userId
+    );
     res.status(200).json(lesson);
   } catch (error) {
     res.status(500).json(error);

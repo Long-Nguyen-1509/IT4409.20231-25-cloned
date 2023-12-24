@@ -122,4 +122,47 @@ exports.deleteLesson = async (req, res) => {
   }
 };
 
+exports.createResource = async (req, res) => {
+  try {
+    const data = req.body;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    const { courseId } = req.params;
+    const resource = await CourseService.createResource(data, courseId, userId);
+    res.status(200).json(resource);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+exports.updateResource = async (req, res) => {
+  try {
+    const data = req.body;
+    const { courseId, resourceId } = req.params;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    const resource = await CourseService.updateResource(
+      data,
+      courseId,
+      resourceId,
+      userId
+    );
+    res.status(200).json(resource);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+exports.deleteResource = async (req, res) => {
+  try {
+    const { courseId, resourceId } = req.params;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    await CourseService.deleteResource(courseId, resourceId, userId);
+    res.status(200);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 exports;

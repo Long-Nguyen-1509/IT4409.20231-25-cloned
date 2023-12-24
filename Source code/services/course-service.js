@@ -162,7 +162,7 @@ exports.updateLesson = async (data, courseId, lessonId, userId) => {
       include: {
         model: Course,
         where: {
-          id: lessonId,
+          id: courseId,
           instructorId: userId,
         },
       },
@@ -181,7 +181,7 @@ exports.deleteLesson = async (courseId, lessonId, userId) => {
       include: {
         model: Course,
         where: {
-          id: lessonId,
+          id: courseId,
           instructorId: userId,
         },
       },
@@ -190,5 +190,58 @@ exports.deleteLesson = async (courseId, lessonId, userId) => {
       throw new Error("Lesson not found");
     }
     return lesson.destroy();
+  } catch (error) {}
+};
+
+exports.createResource = async (data, courseId, userId) => {
+  try {
+    const course = await Course.findOne({
+      where: {
+        id: courseId,
+        instructorId: userId,
+      },
+    });
+    if (!course) {
+      throw new Error("Course not found");
+    }
+    const { resourceName, filePath } = data;
+    return Resource.create({ resourceName, filePath, courseId });
+  } catch (error) {}
+};
+
+exports.updateResource = async (data, courseId, resourceId, userId) => {
+  try {
+    const resource = await Resource.findByPk(resourceId, {
+      include: {
+        model: Course,
+        where: {
+          id: courseId,
+          instructorId: userId,
+        },
+      },
+    });
+    if (!resource) {
+      throw new Error("Resource not found");
+    }
+    const { resourceName, filePath } = data;
+    return resource.update({ resourceName, filePath });
+  } catch (error) {}
+};
+
+exports.deleteResource = async (courseId, resourceId, userId) => {
+  try {
+    const resource = await Resource.findByPk(resourceId, {
+      include: {
+        model: Course,
+        where: {
+          id: courseId,
+          instructorId: userId,
+        },
+      },
+    });
+    if (!resource) {
+      throw new Error("Resource not found");
+    }
+    return resource.destroy();
   } catch (error) {}
 };

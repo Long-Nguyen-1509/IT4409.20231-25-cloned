@@ -24,15 +24,17 @@ router.use("/user", authorization(["STUDENT", "INSTRUCTOR", "ADMIN"]));
 router.post("/user/logout", UserController.logoutUser);
 router.put("/user/edit-profile", UserProfileController.updateUserProfile);
 router.put("/user/change-password", UserController.changePassword);
+router.post("/user/courses/:courseId/comments", CourseController.addComment);
+router.delete(
+  "/user/courses/:courseId/comments/:commentId",
+  CourseController.deleteComment
+);
 
 // student routes
 router.use("/student", authorization("STUDENT"));
 router.post("/student/enroll", EnrollmentController.enrollStudentInCourse);
 router.get("/student/courses", UserController.getEnrolledCourses);
-router.get(
-  "/student/courses/:id",
-  CourseController.getCourseDetailForStudent
-);
+router.get("/student/courses/:id", CourseController.getCourseDetailForStudent);
 
 // instructor routes
 router.use("/instructor", authorization("INSTRUCTOR"));

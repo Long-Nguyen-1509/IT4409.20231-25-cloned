@@ -165,4 +165,33 @@ exports.deleteResource = async (req, res) => {
   }
 };
 
+exports.addComment = async (req, res) => {
+  try {
+    const data = req.body;
+    const { courseId } = req.params;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    const course = await CourseService.addComment(data, courseId, userId);
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+exports.deleteComment = async (req, res) => {
+  try {
+    const { courseId, commentId } = req.params;
+    const decoded = req.decoded;
+    const userId = decoded.userId;
+    await CourseService.deleteComment(
+      courseId,
+      userId,
+      commentId
+    );
+    res.status(200);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 exports;

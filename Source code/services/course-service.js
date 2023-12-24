@@ -1,5 +1,5 @@
 const {
-  models: { Course, User, Enrollment, Lesson, Resource },
+  models: { Course, User, Enrollment, Lesson, Resource, Comment },
 } = require("../models");
 
 const { Op } = require("sequelize");
@@ -55,6 +55,9 @@ exports.getCourseDetailForStudent = async (id, userId) => {
         {
           model: Resource,
         },
+        {
+          model: Comment,
+        },
       ],
     });
     if (!course) {
@@ -77,6 +80,9 @@ exports.getCourseDetailForInstructor = async (id, userId) => {
         },
         {
           model: Resource,
+        },
+        {
+          model: Comment,
         },
       ],
     });
@@ -243,5 +249,32 @@ exports.deleteResource = async (courseId, resourceId, userId) => {
       throw new Error("Resource not found");
     }
     return resource.destroy();
+  } catch (error) {}
+};
+
+exports.addComment = async (data, courseId, userId) => {
+  try {
+    const course = await Course.findByPk(courseId);
+    if (!course) {
+      throw new Error("Course not found");
+    }
+    const { content } = data;
+    return Comment.create({ content, courseId, userId });
+  } catch (error) {}
+};
+
+exports.deleteComment = async (courseId, userId, commentId) => {
+  try {
+    const comment = await Comment.findOne({
+      where: {
+        id: commentId,
+        courseId,
+        userId,
+      },
+    });
+    if (!comment) {
+      throw new Error("Comment not found");
+    }
+    return comment.destroy();
   } catch (error) {}
 };
